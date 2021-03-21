@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="hello websocket" />
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>socket</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-size: 1.2rem;
+            margin: 0;
+        }
+
+        html,
+        body {
+            padding: 0;
+            margin: 0;
+        }
+
+        #top {
+            padding: 0;
+            height: 170px;
+            border-bottom: solid 1px grey;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        #bottom {
+            height: calc(100vh - 170px);
+            overflow-y: scroll;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        input {
+            width: 300px;
+            height: 45px;
+            margin: 0.5rem;
+        }
+
+        button {
+            height: 40px;
+            margin: 0.5rem;
+            width: 100px;
+        }
+
+        span {
+            font-size: 0.6rem;
+        }
+
+        ul {
+            list-style: inside;
+        }
+
+        img {
+            width: 80%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="top">
+        <h1>Input Image .png:</h1>
+        <form>
+            <div>
+                <input type="file" />
+            </div>
+            <div>
+                <button type="submit">Enter</button>
+            </div>
+        </form>
+    </div>
+    <div id="bottom">
+        <ul id="container"></ul>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const title = document.querySelector('h1');
+        const ul = document.querySelector('#container');
+        const form = document.querySelector('form');
+        const input = document.querySelector('input');
+
+        const socket = io();
+        form.onsubmit = (e) => {
+            e.preventDefault();
+            if (input.value) {
+                socket.emit('chat message', input.files[0]);
+                input.value = '';
+            }
+        };
+        socket.on('chat message', (msg) => {
+            console.log(msg);
+            const li = document.createElement('li');
+            const img = document.createElement('img');
+            const blob = new Blob([msg]);
+            console.log('continue');
+            const urlCreator = window.URL || window.webkitURL;
+            const imageUrl = urlCreator.createObjectURL(blob);
+            img.src = imageUrl;
+            li.appendChild(img);
+            ul.appendChild(li);
+        });
+    </script>
+</body>
+
+</html>
